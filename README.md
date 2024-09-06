@@ -1,75 +1,68 @@
-# Nuxt 3 Minimal Starter
+# Sentiment Analysis Frontend 
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+<img src="screenshot/principal.jpg" alt="Tela principal">
 
-## Setup
+> Frontend para a API RESTful de análise de sentimentos em textos [Sentiment Analysis API](https://github.com/bpbastos/sentiment-analysis-ml-api) . Este frontend foi desenvolvido utilizando Nuxt 3, Vue 3, Tailwind CSS, NuxtUI e Zod.
 
-Make sure to install the dependencies:
+> O desenvolvimento deste frontend faz parte do trabalho de conclusão do último módulo — Qualidade de Software, Segurança e Sistemas Inteligentes — da Pós-Graduação em Engenharia de Software da PUC-RIO. 
 
-```bash
-# npm
+## 💻 Pré-requisitos
+
+Antes de começar, verifique se o seu ambiente atende aos seguintes requisitos:
+
+* `Docker`
+
+> Instalação do docker: https://docs.docker.com/engine/install/
+
+* `Node.js`
+
+> Instalação do node: https://nodejs.org/en/learn/getting-started/how-to-install-nodejs
+
+## 📦 Rodando com docker
+
+Faça clone do projeto:
+```
+git clone https://github.com/bpbastos/sentiment-analysis-ml-front
+```
+
+Acesse o diretório do projeto com:
+```
+cd sentiment-analysis-ml-front
+```
+
+Para construir a imagem docker do projeto, execute:
+```sh
+docker build -t sentiment-analysis-front:1.0 .
+```
+
+Para rodar o projeto, execute:
+```sh
+docker run -d -p 3000:3000 --name front sentiment-analysis-front:1.0 
+```
+
+Abra o endereço http://localhost:3000 no seu navegador.
+
+## 🚀 Rodando sem docker 
+
+Clone ou faça download do projeto :
+```
+git clone https://github.com/bpbastos/sentiment-analysis-ml-front
+```
+
+Acesse o diretório do projeto com:
+```
+cd sentiment-analysis-ml-front
+```
+
+Após clonar o repositório, será necessário fazer a instalação das dependencias da aplicação.
+
+```
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+No terminal execute o comando descrito abaixo para executar a API:
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run dev -- -o
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Abra o http://localhost:3000/ no navegador para acessar o frontend.
