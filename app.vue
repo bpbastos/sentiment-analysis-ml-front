@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 
-// Define the validation schema using zod
+// Define o schema de validação usando zod
 const schema = z.object({
   modelo: z.enum(['model-et', 'pipeline-et', 'model-distilbert'], {
     message: 'Selecione um modelo para análise de sentimentos.'
@@ -52,7 +52,12 @@ const apiUrl = 'http://localhost:5000/review'
 const showLoading = ref(false)
 const form = ref()
 
-const { status, data: reviews, refresh } = await useLazyAsyncData('reviews', () => $fetch(apiUrl))
+const { status, data, refresh } = await useLazyAsyncData('reviews', () => $fetch(apiUrl))
+
+const reviews = computed(() => {
+  if (!Array.isArray(data.value)) return []
+  return data.value
+})
 
 const rows = computed(() => {
   if (!Array.isArray(reviews.value)) return []
