@@ -30,6 +30,14 @@ Acesse o diretório do projeto com:
 cd sentiment-analysis-ml-front
 ```
 
+Crie um arquivo .env na raiz do diretório sentiment-analysis-ml-front com a seguinte variável:
+
+> Se estiver usando Docker Desktop para Mac ou Windows, use host.docker.internal para acessar o IP do host. Caso contrário, utilize o IP da máquina host ou o IP do servidor onde a API está rodando.
+
+```env
+API_URL=http://host.docker.internal:5000/review
+```
+
 Para construir a imagem docker do projeto, execute:
 ```sh
 docker build -t sentiment-analysis-front:1.0 .
@@ -37,7 +45,7 @@ docker build -t sentiment-analysis-front:1.0 .
 
 Para rodar o projeto, execute:
 ```sh
-docker run -d -p 3000:3000 --name front sentiment-analysis-front:1.0 
+docker run -d -p 3000:3000 --env-file .env --name front sentiment-analysis-front:1.0 
 ```
 
 Abra o endereço http://localhost:3000 no seu navegador.
