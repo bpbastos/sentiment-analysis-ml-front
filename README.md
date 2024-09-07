@@ -6,6 +6,10 @@
 
 > O desenvolvimento deste frontend faz parte do trabalho de conclusão do último módulo — Qualidade de Software, Segurança e Sistemas Inteligentes — da Pós-Graduação em Engenharia de Software da PUC-RIO. 
 
+## 🛠️ TODO
+
+- [ ] Refatorar app.vue para componentes
+
 ## 💻 Pré-requisitos
 
 Antes de começar, verifique se o seu ambiente atende aos seguintes requisitos:
