@@ -2,7 +2,7 @@
 
 <img src="screenshot/principal.jpg" alt="Tela principal">
 
-> Frontend para a API RESTful de análise de sentimentos em textos [Sentiment Analysis API](https://github.com/bpbastos/sentiment-analysis-ml-api) . Este frontend foi desenvolvido utilizando Nuxt 3, Vue 3, Tailwind CSS, NuxtUI e Zod.
+> Frontend para a API RESTful de análise de sentimentos em textos [Sentiment Analysis API](https://github.com/bpbastos/sentiment-analysis-ml-api) . Este frontend foi desenvolvido utilizando Typescript, Nuxt 3, Vue 3, Tailwind CSS, NuxtUI e Zod.
 
 > O desenvolvimento deste frontend faz parte do trabalho de conclusão do último módulo — Qualidade de Software, Segurança e Sistemas Inteligentes — da Pós-Graduação em Engenharia de Software da PUC-RIO. 
 
