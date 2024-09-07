@@ -37,19 +37,22 @@ const columns = [{
   key: 'texto',
   label: 'Texto',
   sortable: false,
-  class: 'w-[500px]'
+  class: 'w-9/12'
 }, {
   key: 'sentimento',
-  label: 'Sentimento',
+  label: '',
   sortable: false,
-  class: 'w-[100px]'
+  class: 'w-1/12'
 }]
 
+
+const config = useRuntimeConfig();
 const selected = ref([])
 const page = ref(1)
 const pageCount = 5
-const apiUrl = 'http://localhost:5000/review'
-const showLoading = ref(false)
+const apiUrl = config.public.API_URL
+const isAddingReview = ref(false)
+const isDeletingReview = ref(false)
 const form = ref()
 
 const { status, data, refresh } = await useLazyAsyncData('reviews', () => $fetch(apiUrl))
@@ -66,7 +69,7 @@ const rows = computed(() => {
 
 async function addReview(event: FormSubmitEvent<Schema>) {
   form.value.clear()
-  showLoading.value = true
+  isAddingReview.value = true
   const formData = new FormData()
   formData.append('modelo', event.data.modelo)
   formData.append('texto', event.data.texto)
@@ -83,27 +86,31 @@ async function addReview(event: FormSubmitEvent<Schema>) {
   } else {
     refresh()
   }
-  showLoading.value = false
+  isAddingReview.value = false
 }
 
 async function deleteReviews() {
-  selected.value.forEach(async (review) => {
-    showLoading.value = true
+  isDeletingReview.value = true
+  const reviewsToDelete = [...selected.value] // Cria uma cópia da lista de reviews selecionados
+  for (const review of reviewsToDelete) {
     const res = await $fetch(`${apiUrl}?id=${review.id}`, { method: 'DELETE' })
-    if (!res.error) {
-      selected.value.pop()
-      refresh()
-    } else {
+    if (res.error) {
       form.value.setErrors([{
-        // Map validation errors to { path: string, message: string }
         message: res.error,
         path: 'texto',
       }])
+    } else {
+      // Remove o review deletado da lista de selecionados
+      const index = selected.value.findIndex(r => r.id === review.id)
+      if (index !== -1) {
+        selected.value.splice(index, 1)
+      }
+      // Atualiza a lista de reviews
+      await refresh()
     }
-    showLoading.value = false
-  })
+  }
+  isDeletingReview.value = false
 }
-
 </script>
 <template>
   <UContainer class="grid place-content-center h-screen">
@@ -114,24 +121,29 @@ async function deleteReviews() {
         <h2 class="text-xl font-bold">Análise de sentimentos</h2>
       </template>
 
-      <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="addReview">
+      <UForm ref="form" :schema="schema" :state="state" class="space-y-4" @submit="addReview" :loading="isAddingReview">
         <UFormGroup name="modelo">
-          <USelect placeholder="Selecione o modelo..." v-model="state.modelo" :options="models" option-attribute="name"
-            :loading="showLoading" />
+          <USelect placeholder="Selecione o modelo..." v-model="state.modelo" :options="models"
+            option-attribute="name" />
         </UFormGroup>
         <UFormGroup name="texto">
           <UTextarea placeholder="Informe o texto para análise de sentimentos ..." v-model="state.texto" class="w-full"
-            :rows="10" :loading="showLoading" />
+            :rows="10" />
         </UFormGroup>
-        <UButton type="submit" :loading="showLoading">Analisar</UButton>
+        <UButton type="submit" :loading="isAddingReview">Analisar</UButton>
       </UForm>
 
       <UDivider label="Resultados" type="dashed" />
 
-      <UTable v-model="selected" :rows="rows" :columns="columns" :loading="showLoading"
+      <UTable v-model="selected" :rows="rows" :columns="columns" class="w-full"
+        :loading="status === 'pending' || isAddingReview || isDeletingReview"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Carregando...' }"
-        :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'Nenhum review encontrado.' }"
         :progress="{ color: 'primary', animation: 'carousel' }" :ui="{ td: { base: 'max-w-[0] truncate' } }">
+        <template #empty-state>
+  
+              <span class="italic text-sm">Nenhum review encontrado.</span>
+         
+        </template>
         <template #sentimento-data="{ row }">
           <div v-show="row.sentimento" class="text-3xl">😊</div>
           <div v-show="!row.sentimento" class="text-3xl">🙁</div>
@@ -150,11 +162,14 @@ async function deleteReviews() {
       </UTable>
 
       <div class="flex justify-between px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
-        <UButton :disabled="selected.length === 0" @click="deleteReviews" :loading="showLoading">Deletar ({{
-          selected.length }})
-        </UButton>
-        <UPagination :disabled="reviews?.length === 0" v-model="page" :page-count="pageCount"
-          :total="Array.isArray(reviews.value) ? reviews.value.length : 0" :loading="showLoading" />
+        <div v-if="Array.isArray(reviews) && reviews.length > 0">
+          <UButton :disabled="selected.length === 0" @click="deleteReviews" :loading="isDeletingReview">
+            Deletar <span v-if="selected.length > 0">({{ selected.length }})</span>
+          </UButton>
+        </div>
+        <div v-if="Array.isArray(reviews) && reviews.length > 1" class="ml-auto">
+          <UPagination v-model="page" :page-count="pageCount" :total="reviews.length" />
+        </div>
       </div>
 
     </UCard>
