@@ -68,48 +68,68 @@ const rows = computed(() => {
 })
 
 async function addReview(event: FormSubmitEvent<Schema>) {
-  form.value.clear()
   isAddingReview.value = true
-  const formData = new FormData()
-  formData.append('modelo', event.data.modelo)
-  formData.append('texto', event.data.texto)
-  const res = await $fetch(apiUrl, {
-    method: 'POST',
-    body: formData,
-  })
-  if (res.error) {
-    form.value.setErrors([{
-      // Map validation errors to { path: string, message: string }
-      message: res.error,
-      path: 'texto',
-    }])
-  } else {
-    refresh()
-  }
-  isAddingReview.value = false
-}
-
-async function deleteReviews() {
-  isDeletingReview.value = true
-  const reviewsToDelete = [...selected.value] // Cria uma cópia da lista de reviews selecionados
-  for (const review of reviewsToDelete) {
-    const res = await $fetch(`${apiUrl}?id=${review.id}`, { method: 'DELETE' })
+  try {
+    const formData = new FormData()
+    formData.append('modelo', event.data.modelo)
+    formData.append('texto', event.data.texto)
+    const res = await $fetch(apiUrl, {
+      method: 'POST',
+      body: formData,
+    })
     if (res.error) {
       form.value.setErrors([{
+        // Map validation errors to { path: string, message: string }
         message: res.error,
         path: 'texto',
       }])
     } else {
-      // Remove o review deletado da lista de selecionados
-      const index = selected.value.findIndex(r => r.id === review.id)
-      if (index !== -1) {
-        selected.value.splice(index, 1)
-      }
-      // Atualiza a lista de reviews
+      state.modelo = undefined
+      state.texto = undefined    
+      form.value.clear()
       await refresh()
     }
+  } catch (error) {
+    console.error('Erro ao adicionar review:', error)
+    form.value.setErrors([{
+      message: 'Erro ao adicionar review. Tente novamente mais tarde.',
+      path: 'texto',
+    }])
+  } finally {
+    isAddingReview.value = false
   }
-  isDeletingReview.value = false
+}
+
+async function deleteReviews() {
+  isDeletingReview.value = true
+  try {
+    const reviewsToDelete = [...selected.value] // Cria uma cópia da lista de reviews selecionados
+    for (const review of reviewsToDelete) {
+      const res = await $fetch(`${apiUrl}?id=${review.id}`, { method: 'DELETE' })
+      if (res.error) {
+        form.value.setErrors([{
+          message: res.error,
+          path: 'texto',
+        }])
+      } else {
+        // Remove o review deletado da lista de selecionados
+        const index = selected.value.findIndex(r => r.id === review.id)
+        if (index !== -1) {
+          selected.value.splice(index, 1)
+        }
+        // Atualiza a lista de reviews
+        await refresh()
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao deletar reviews:', error)
+    form.value.setErrors([{
+      message: 'Erro ao deletar reviews. Tente novamente mais tarde.',
+      path: 'texto',
+    }])
+  } finally {
+    isDeletingReview.value = false
+  }
 }
 </script>
 <template>
