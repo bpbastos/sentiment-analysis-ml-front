@@ -40,12 +40,12 @@ API_URL=http://host.docker.internal:5000/review
 
 Para construir a imagem docker do projeto, execute:
 ```sh
-docker build -t sentiment-analysis-front:1.0 .
+docker compose build
 ```
 
 Para rodar o projeto, execute:
 ```sh
-docker run -d -p 3000:3000 --env-file .env --name front sentiment-analysis-front:1.0 
+docker compose up -d 
 ```
 
 Abra o endereço http://localhost:3000 no seu navegador.
