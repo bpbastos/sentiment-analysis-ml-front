@@ -10,13 +10,16 @@ const schema = z.object({
   texto: z.string({ required_error: 'Informe o texto para análise de sentimentos.' }).min(5, 'Texto deve conter no mínimo 5 caracteres').max(250, 'Texto deve conter no máximo 250 caracteres.')
 })
 
+// Define o tipo do schema
 type Schema = z.output<typeof schema>
 
+// Define o estado reativo para o formulário
 const state = reactive({
   modelo: undefined,
   texto: undefined
 })
 
+// Define os modelos disponíveis
 const models = [
   {
     name: 'ExtraTrees',
@@ -32,7 +35,7 @@ const models = [
   }
 ]
 
-// Columns
+// Define as colunas da tabela
 const columns = [{
   key: 'texto',
   label: 'Texto',
@@ -45,9 +48,23 @@ const columns = [{
   class: 'w-1/12'
 }]
 
+// Define o tipo da resposta esperada da API
+interface ReviewApiResponse {
+  error?: string;
+}
+
+// Define o tipo para os objetos de review
+interface Review {
+  id: string;
+  texto: string;
+  sentimento: boolean;
+  modelo: string;
+  data_criacao: string;
+}
+
 
 const config = useRuntimeConfig();
-const selected = ref([])
+const selected = ref<Review[]>([])
 const page = ref(1)
 const pageCount = 5
 const apiUrl = config.public.API_URL
@@ -73,7 +90,7 @@ async function addReview(event: FormSubmitEvent<Schema>) {
     const formData = new FormData()
     formData.append('modelo', event.data.modelo)
     formData.append('texto', event.data.texto)
-    const res = await $fetch(apiUrl, {
+    const res = await $fetch<ReviewApiResponse>(apiUrl, {
       method: 'POST',
       body: formData,
     })
@@ -103,9 +120,9 @@ async function addReview(event: FormSubmitEvent<Schema>) {
 async function deleteReviews() {
   isDeletingReview.value = true
   try {
-    const reviewsToDelete = [...selected.value] // Cria uma cópia da lista de reviews selecionados
+    const reviewsToDelete: Review[] = [...selected.value] // Cria uma cópia da lista de reviews selecionados
     for (const review of reviewsToDelete) {
-      const res = await $fetch(`${apiUrl}?id=${review.id}`, { method: 'DELETE' })
+      const res = await $fetch<ReviewApiResponse>(`${apiUrl}?id=${review?.id}`, { method: 'DELETE' })
       if (res.error) {
         form.value.setErrors([{
           message: res.error,
