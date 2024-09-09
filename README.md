@@ -66,6 +66,14 @@ Acesse o diretório do projeto com:
 cd sentiment-analysis-ml-front
 ```
 
+Crie um arquivo .env na raiz do diretório sentiment-analysis-ml-front com a seguinte variável:
+
+> Se estiver usando Docker Desktop para Mac ou Windows, use host.docker.internal para acessar o IP do host. Caso contrário, utilize o IP da máquina host ou o IP do servidor onde a API está rodando.
+
+```env
+API_URL=http://host.docker.internal:5000/review
+```
+
 Após clonar o repositório, será necessário fazer a instalação das dependencias da aplicação.
 
 ```
